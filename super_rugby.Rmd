@@ -1,0 +1,47 @@
+---
+title: "superbru"
+author: "Tinus Cloete"
+date: "21 February 2017"
+output: html_document
+---
+
+This is just a very quick analysis to at least marginally improve my first superbru choices by a tiny bit.
+
+The source of the data is: 
+[Super Rugby 2009 to 2016](http://www.aussportsbetting.com/data/historical-super-rugby-results-and-odds-data/)
+
+```{r}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+
+raw_df <- read_excel("super_rugby.xlsx", sheet = 1,col_names = TRUE, skip = 1)
+
+scores <- transmute(raw_df,
+                          date = Date,
+                          home_team = `Home Team`,
+                          away_team = `Away Team`, 
+                          home_score = `Home Score`, 
+                          away_score = `Away Score`,
+                          Delta = home_score - away_score
+)
+
+g <- ggplot(scores) +
+      geom_bar(aes(x = Delta, fill = home_team))
+
+p <- ggplotly(g)
+
+
+#MUST PUT IN Rprofile
+Sys.setenv("plotly_username" = "Overlytic")
+Sys.setenv("plotly_api_key" = "zCADR9ItLBnSkw8rTd06")
+
+
+# Create a shareable link to your chart
+# Set up API credentials: https://plot.ly/r/getting-started
+chart_link = plotly_POST(p, filename = "superbru-1")
+chart_link
+
+```
+
